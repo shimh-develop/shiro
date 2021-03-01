@@ -64,8 +64,11 @@ public class MemorySessionDAO extends AbstractSessionDAO {
     }
 
     protected Serializable doCreate(Session session) {
+        //s SessionIdGenerator生成Session ID
         Serializable sessionId = generateSessionId(session);
+        //s 为Session设置ID
         assignSessionId(session, sessionId);
+        //s 持久化 ConcurrentMap
         storeSession(sessionId, session);
         return sessionId;
     }

@@ -140,6 +140,7 @@ public class ShiroHttpServletRequest extends HttpServletRequestWrapper {
 
         HttpSession httpSession;
 
+        //s shiro管理Session还是web session
         if (isHttpSessions()) {
             httpSession = super.getSession(false);
             if (httpSession == null && create) {

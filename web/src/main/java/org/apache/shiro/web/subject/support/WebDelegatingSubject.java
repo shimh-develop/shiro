@@ -85,7 +85,9 @@ public class WebDelegatingSubject extends DelegatingSubject implements WebSubjec
      */
     @Override
     protected boolean isSessionCreationEnabled() {
+        //s 在创建Subject时通过SubjectContext可以设置 org.apache.shiro.subject.SubjectContext.setSessionCreationEnabled
         boolean enabled = super.isSessionCreationEnabled();
+        //s 检查request的一个属性来决定是否创建Session request.getAttribute(DefaultSubjectContext.SESSION_CREATION_ENABLED)
         return enabled && WebUtils._isSessionCreationEnabled(this);
     }
 

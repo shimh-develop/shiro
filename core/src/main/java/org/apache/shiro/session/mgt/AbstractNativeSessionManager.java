@@ -96,11 +96,15 @@ public abstract class AbstractNativeSessionManager extends AbstractSessionManage
     }
 
     public Session start(SessionContext context) {
+        //s 创建Session 根据需要开启定期Session无效验证
         Session session = createSession(context);
+        //s 设置全局超时时间
         applyGlobalSessionTimeout(session);
         onStart(session, context);
+        //s 通知配置的Session监听器
         notifyStart(session);
         //Don't expose the EIS-tier Session object to the client-tier:
+        //s 代理Session Session操作都委托给SessionManager
         return createExposedSession(session, context);
     }
 
@@ -121,7 +125,9 @@ public abstract class AbstractNativeSessionManager extends AbstractSessionManage
     protected abstract Session createSession(SessionContext context) throws AuthorizationException;
 
     protected void applyGlobalSessionTimeout(Session session) {
+        //s 设置Session超时时间
         session.setTimeout(getGlobalSessionTimeout());
+        //s SessionDAO 更新状态
         onChange(session);
     }
 

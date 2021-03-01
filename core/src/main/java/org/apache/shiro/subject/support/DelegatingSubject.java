@@ -328,10 +328,11 @@ public class DelegatingSubject implements Subject {
                     "; session is null = " + (this.session == null) +
                     "; session has id = " + (this.session != null && session.getId() != null));
         }
-
+        //s 没有Session 并且需要创建
         if (this.session == null && create) {
 
             //added in 1.2:
+            //s 是否允许创建Session 在创建Subject时通过SubjectContext可以设置 org.apache.shiro.subject.SubjectContext.setSessionCreationEnabled
             if (!isSessionCreationEnabled()) {
                 String msg = "Session creation has been disabled for the current subject.  This exception indicates " +
                         "that there is either a programming error (using a session when it should never be " +
@@ -342,8 +343,11 @@ public class DelegatingSubject implements Subject {
             }
 
             log.trace("Starting session for host {}", getHost());
+            //s 创建 DefaultWebSessionContext 设置host、request、response
             SessionContext sessionContext = createSessionContext();
+            //s 创建 Session
             Session session = this.securityManager.start(sessionContext);
+            //s 包装一下Session 调用Session.stop方法时，清空本Subject中的session属性
             this.session = decorate(session);
         }
         return this.session;

@@ -312,6 +312,7 @@ public abstract class AbstractShiroFilter extends OncePerRequestFilter {
                 Session session = subject.getSession(false);
                 if (session != null) {
                     try {
+                        //更新
                         session.touch();
                     } catch (Throwable t) {
                         log.error("session.touch() method invocation has failed.  Unable to update " +
@@ -353,15 +354,19 @@ public abstract class AbstractShiroFilter extends OncePerRequestFilter {
         Throwable t = null;
 
         try {
+            //s 包装Request ShiroHttpServletRequest
             final ServletRequest request = prepareServletRequest(servletRequest, servletResponse, chain);
             final ServletResponse response = prepareServletResponse(request, servletResponse, chain);
 
             final Subject subject = createSubject(request, response);
 
             //noinspection unchecked
+            //s 将当前 Subject、SecurityManager绑定到线程上下文中 所以我们在controller、service中都是用的同一个
             subject.execute(new Callable() {
                 public Object call() throws Exception {
+                    //s 更新Session访问时间
                     updateSessionLastAccessTime(request, response);
+                    //s 执行过滤器链 先执行配置的Shiro filter 在执行普通的Web filter
                     executeChain(request, response, chain);
                     return null;
                 }

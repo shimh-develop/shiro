@@ -93,10 +93,12 @@ public class DefaultWebSessionManager extends DefaultSessionManager implements W
             String msg = "sessionId cannot be null when persisting for subsequent requests.";
             throw new IllegalArgumentException(msg);
         }
+        //s 默认SimpleCookie name：JSESSIONID =》 new SimpleCookie(ShiroHttpSession.DEFAULT_SESSION_ID_NAME)
         Cookie template = getSessionIdCookie();
         Cookie cookie = new SimpleCookie(template);
         String idString = currentId.toString();
         cookie.setValue(idString);
+        //s 写到response中
         cookie.saveTo(request, response);
         log.trace("Set session ID cookie for session with id {}", idString);
     }
@@ -242,8 +244,9 @@ public class DefaultWebSessionManager extends DefaultSessionManager implements W
      */
     @Override
     protected void onStart(Session session, SessionContext context) {
+        //s 父类空实现
         super.onStart(session, context);
-
+        //s 不是Web环境 就返回
         if (!WebUtils.isHttp(context)) {
             log.debug("SessionContext argument is not HTTP compatible or does not have an HTTP request/response " +
                     "pair. No session ID cookie will be set.");
@@ -253,13 +256,14 @@ public class DefaultWebSessionManager extends DefaultSessionManager implements W
         HttpServletRequest request = WebUtils.getHttpRequest(context);
         HttpServletResponse response = WebUtils.getHttpResponse(context);
 
+        //s 是否允许将 Session ID 写入 Cookie
         if (isSessionIdCookieEnabled()) {
             Serializable sessionId = session.getId();
             storeSessionId(sessionId, request, response);
         } else {
             log.debug("Session ID cookie is disabled.  No cookie has been set for new session with id {}", session.getId());
         }
-
+        //s 标识
         request.removeAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE);
         request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_IS_NEW, Boolean.TRUE);
     }

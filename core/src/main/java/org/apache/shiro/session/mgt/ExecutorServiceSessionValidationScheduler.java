@@ -92,6 +92,7 @@ public class ExecutorServiceSessionValidationScheduler implements SessionValidat
     // (so we don't have to change the unit test execution model for the core module)
     public void enableSessionValidation() {
         if (this.sessionValidationInterval > 0l) {
+            //s ScheduledThreadPoolExecutor
             this.service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {  
 	            private final AtomicInteger count = new AtomicInteger(1);
 
@@ -101,7 +102,8 @@ public class ExecutorServiceSessionValidationScheduler implements SessionValidat
 	                thread.setName(threadNamePrefix + count.getAndIncrement());
 	                return thread;  
 	            }  
-            });                  
+            });
+            //s 定期执行run方法 默认 60秒
             this.service.scheduleAtFixedRate(this, sessionValidationInterval,
                 sessionValidationInterval, TimeUnit.MILLISECONDS);
         }
@@ -118,6 +120,7 @@ public class ExecutorServiceSessionValidationScheduler implements SessionValidat
         });
         long startTime = System.currentTimeMillis();
         try {
+            //s Session无效校验
             this.sessionManager.validateSessions();
         } catch (RuntimeException e) {
             log.error("Error while validating the session", e);

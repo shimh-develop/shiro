@@ -151,10 +151,12 @@ public class DefaultSessionManager extends AbstractValidatingSessionManager impl
     }
 
     protected Session doCreateSession(SessionContext context) {
+        //s SessionFactory创建Session
         Session s = newSessionInstance(context);
         if (log.isTraceEnabled()) {
             log.trace("Creating session for host {}", s.getHost());
         }
+        //s SessionDAO持久化Session
         create(s);
         return s;
     }

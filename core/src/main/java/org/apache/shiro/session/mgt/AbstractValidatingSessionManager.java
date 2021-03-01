@@ -82,6 +82,7 @@ public abstract class AbstractValidatingSessionManager extends AbstractNativeSes
 
     private void enableSessionValidationIfNecessary() {
         SessionValidationScheduler scheduler = getSessionValidationScheduler();
+        //s 允许Session无效校验 创建默认的
         if (isSessionValidationSchedulerEnabled() && (scheduler == null || !scheduler.isEnabled())) {
             enableSessionValidation();
         }
@@ -132,7 +133,9 @@ public abstract class AbstractValidatingSessionManager extends AbstractNativeSes
     protected abstract Session retrieveSession(SessionKey key) throws UnknownSessionException;
 
     protected Session createSession(SessionContext context) throws AuthorizationException {
+        //s 开启定期Session无效校验
         enableSessionValidationIfNecessary();
+        //s SessionFactory创建Session SessionDAO存储Session
         return doCreateSession(context);
     }
 
@@ -223,6 +226,7 @@ public abstract class AbstractValidatingSessionManager extends AbstractNativeSes
     protected synchronized void enableSessionValidation() {
         SessionValidationScheduler scheduler = getSessionValidationScheduler();
         if (scheduler == null) {
+            //s 创建Session验证调度器 默认ExecutorServiceSessionValidationScheduler
             scheduler = createSessionValidationScheduler();
             setSessionValidationScheduler(scheduler);
         }
